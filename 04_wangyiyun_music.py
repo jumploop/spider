@@ -21,19 +21,16 @@ class Music_163(object):
         response = requests.get(url, headers=self.headers)
         return response.content
 
-    def get_category_list(self, html_str):  # 获取分类内容
+    def get_category_list(self, html_str):    # 获取分类内容
         """获取分类列表"""
         html = etree.HTML(html_str)
         dl_list = html.xpath('//div[@class="bd"]/dl')
         category_list = []
         for dl in dl_list:
-            b_item = {}
-            b_item['b_cate'] = dl.xpath('./dt/text()')[0]  # 大分类
-            b_item['b_list'] = []  # 具体分类列表
+            b_item = {'b_cate': dl.xpath('./dt/text()')[0], 'b_list': []}
             a_list = dl.xpath('./dd/a')
             for a in a_list:
-                s_item = {}
-                s_item['s_cate'] = a.xpath('./text()')[0]  # 小分类
+                s_item = {'s_cate': a.xpath('./text()')[0]}
                 s_item['s_href'] = self.part_url + a.xpath('./@href')[0]  # 链接地址
                 s_item['play_list'] = self.get_play_list(s_item['s_href'], [])
                 b_item['b_list'].append(s_item)
@@ -53,8 +50,12 @@ class Music_163(object):
         self.driver.switch_to.frame('g_iframe')
         li_list = self.driver.find_elements_by_xpath('//ul[@id="m-pl-container"]/li')
         for li in li_list:
-            item = {}
-            item['title'] = li.find_element_by_xpath('./p[@class="dec"]/a').get_attribute('title')
+            item = {
+                'title': li.find_element_by_xpath(
+                    './p[@class="dec"]/a'
+                ).get_attribute('title')
+            }
+
             item['href'] = li.find_element_by_xpath('./p[@class="dec"]/a').get_attribute('href')
             item['author_name'] = li.find_element_by_xpath('./p[last()]/a').get_attribute('title')
             item['author_href'] = li.find_element_by_xpath('./p[last()]/a').get_attribute('href')
@@ -71,7 +72,7 @@ class Music_163(object):
     def save_content_list(self, content_list):
         json_str = json.dumps(content_list, ensure_ascii=False, indent=4)
 
-        with open('./163/163_{}'.format(str(self.index)) + '页.json', 'w', encoding='utf-8') as f:
+        with open(f'./163/163_{str(self.index)}' + '页.json', 'w', encoding='utf-8') as f:
             f.write(json_str)
         self.index += 1
 

@@ -13,8 +13,7 @@ class DouYu(object):
         li_list = self.driver.find_elements_by_xpath('//ul[@id="live-list-contentbox"]/li')
         content_list = []
         for li in li_list:
-            item = {}
-            item['title'] = li.find_element_by_xpath('./a').get_attribute('title')
+            item = {'title': li.find_element_by_xpath('./a').get_attribute('title')}
             item['anchor'] = li.find_element_by_xpath('.//span[@class="dy-name ellipsis fl"]').text
             item['watch_num'] = li.find_element_by_xpath('.//span[@class="dy-num fr"]').text
             item['image'] = li.find_element_by_xpath('.//img[@class="JS_listthumb"]').get_attribute('src')
@@ -28,7 +27,7 @@ class DouYu(object):
 
     def save_content_list(self, content_list):
         json_str = json.dumps(content_list, ensure_ascii=False, indent=4)
-        with open('./douyu/douyu_{}'.format(str(self.index)) + '页.json', 'w', encoding='utf-8') as f:
+        with open(f'./douyu/douyu_{str(self.index)}' + '页.json', 'w', encoding='utf-8') as f:
             f.write(json_str)
         self.index += 1
 
